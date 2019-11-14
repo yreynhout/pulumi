@@ -65,6 +65,7 @@
         "tests/config.spec.ts",
         "tests/deasync.spec.ts",
         "tests/init.spec.ts",
+        "tests/isinstance.spec.ts",
         "tests/iterable.spec.ts",
         "tests/options.spec.ts",
         "tests/output.spec.ts",
