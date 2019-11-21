@@ -25,6 +25,9 @@ package pulumirpc;
 // everything from raw resource definitions to entire projects/stacks/snapshots for arbitrary
 // issues -- style, policy, correctness, security, and so on.
 service Analyzer {
+    // Configure is called to provide extra information about context of the analyis, such as the
+    // stack name, project name whether it's a preview, etc.
+    rpc Configure(AnalyzerConfiguration) returns (google.protobuf.Empty) {}
     // Analyze analyzes a single resource object, and returns any errors that it finds.
     // Called with the "inputs" to the resource, before it is updated.
     rpc Analyze(AnalyzeRequest) returns (AnalyzeResponse) {}
@@ -36,6 +39,13 @@ service Analyzer {
     rpc GetAnalyzerInfo(google.protobuf.Empty) returns (AnalyzerInfo) {}
     // GetPluginInfo returns generic information about this plugin, like its version.
     rpc GetPluginInfo(google.protobuf.Empty) returns (PluginInfo) {}
+}
+
+// AnalyzerConfiguration provides information about the context of the analysis.
+message AnalyzerConfiguration {
+    string stackName = 1;   // the stack name
+    string projectName = 2; // the project name
+    bool dryRun = 3;        // whether the analysis is happening during a preview
 }
 
 message AnalyzeRequest {

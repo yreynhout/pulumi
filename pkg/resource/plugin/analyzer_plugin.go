@@ -123,6 +123,53 @@ func (a *analyzer) label() string {
 	return fmt.Sprintf("Analyzer[%s]", a.name)
 }
 
+func (a *analyzer) Configure(c AnalyzerConfiguration) error {
+	return nil
+
+	// logging.V(7).Infof("%s.AnalyzeStack(#resources=%d) executing", a.label(), len(resources))
+
+	// protoResources := make([]*pulumirpc.AnalyzerResource, len(resources))
+	// for idx, resource := range resources {
+	// 	props, err := MarshalProperties(resource.Properties, MarshalOptions{KeepUnknowns: true, KeepSecrets: true})
+	// 	if err != nil {
+	// 		return nil, errors.Wrap(err, "marshalling properties")
+	// 	}
+
+	// 	protoResources[idx] = &pulumirpc.AnalyzerResource{
+	// 		Urn:        string(resource.URN),
+	// 		Type:       string(resource.Type),
+	// 		Name:       string(resource.Name),
+	// 		Properties: props,
+	// 	}
+	// }
+
+	// resp, err := a.client.AnalyzeStack(a.ctx.Request(), &pulumirpc.AnalyzeStackRequest{
+	// 	Resources: protoResources,
+	// })
+	// if err != nil {
+	// 	rpcError := rpcerror.Convert(err)
+	// 	// Handle the case where we the policy pack doesn't implement a recent enough
+	// 	// AnalyzerService to support the AnalyzeStack method. Ignore the error as it
+	// 	// just means the analyzer isn't capable of this specific type of check.
+	// 	if rpcError.Code() == codes.Unimplemented {
+	// 		logging.V(7).Infof("%s.AnalyzeStack(...) is unimplemented, skipping: err=%v", a.label(), rpcError)
+	// 		return nil, nil
+	// 	}
+
+	// 	logging.V(7).Infof("%s.AnalyzeStack(...) failed: err=%v", a.label(), rpcError)
+	// 	return nil, rpcError
+	// }
+
+	// failures := resp.GetDiagnostics()
+	// logging.V(7).Infof("%s.AnalyzeStack(...) success: failures=#%d", a.label(), len(failures))
+
+	// diags, err := convertDiagnostics(failures)
+	// if err != nil {
+	// 	return nil, errors.Wrap(err, "converting analysis results")
+	// }
+	// return diags, nil
+}
+
 // Analyze analyzes a single resource object, and returns any errors that it finds.
 func (a *analyzer) Analyze(r AnalyzerResource) ([]AnalyzeDiagnostic, error) {
 	urn, t, name, props := r.URN, r.Type, r.Name, r.Properties

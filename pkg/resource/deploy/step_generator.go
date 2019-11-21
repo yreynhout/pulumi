@@ -330,6 +330,10 @@ func (sg *stepGenerator) generateSteps(event RegisterResourceEvent) ([]Step, res
 		}
 	}
 
+	// Preview: sg.plan.preview
+	// Stack: sg.plan.target.Name
+	// Project: sg.plan.source.Project()
+
 	// Send the resource off to any Analyzers before being operated on.
 	analyzers := sg.plan.ctx.Host.ListAnalyzers()
 	for _, analyzer := range analyzers {

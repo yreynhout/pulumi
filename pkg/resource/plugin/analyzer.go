@@ -31,6 +31,9 @@ type Analyzer interface {
 	io.Closer
 	// Name fetches an analyzer's qualified name.
 	Name() tokens.QName
+	// Configure provides the analyzer with extra information about context of the analyis, such as the stack name,
+	// project name, whether it's a preview, etc.
+	Configure(c AnalyzerConfiguration) error
 	// Analyze analyzes a single resource object, and returns any errors that it finds.
 	// Is called before the resource is modified.
 	Analyze(r AnalyzerResource) ([]AnalyzeDiagnostic, error)
@@ -41,6 +44,13 @@ type Analyzer interface {
 	GetAnalyzerInfo() (AnalyzerInfo, error)
 	// GetPluginInfo returns this plugin's information.
 	GetPluginInfo() (workspace.PluginInfo, error)
+}
+
+// AnalyzerConfiguration provides information about the context of the analysis.
+type AnalyzerConfiguration struct {
+	StackName   tokens.QName
+	ProjectName string
+	DryRun      bool
 }
 
 // AnalyzerResource mirrors a resource that is sent to the analyzer.
