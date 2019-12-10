@@ -17,6 +17,7 @@ package plugin
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/blang/semver"
 	pbempty "github.com/golang/protobuf/ptypes/empty"
@@ -139,6 +140,7 @@ func (a *analyzer) Analyze(r AnalyzerResource) ([]AnalyzeDiagnostic, error) {
 		Type:       string(t),
 		Name:       string(name),
 		Properties: mprops,
+		Options:    convertResourceOptions(r.Options),
 	})
 	if err != nil {
 		rpcError := rpcerror.Convert(err)
@@ -172,6 +174,7 @@ func (a *analyzer) AnalyzeStack(resources []AnalyzerResource) ([]AnalyzeDiagnost
 			Type:       string(resource.Type),
 			Name:       string(resource.Name),
 			Properties: props,
+			Options:    convertResourceOptions(resource.Options),
 		}
 	}
 
@@ -267,6 +270,43 @@ func (a *analyzer) GetPluginInfo() (workspace.PluginInfo, error) {
 // Close tears down the underlying plugin RPC connection and process.
 func (a *analyzer) Close() error {
 	return a.plug.Close()
+}
+
+func convertResourceOptions(opts AnalyzerResourceOptions) *pulumirpc.AnalyzerResourceOptions {
+	secs := make([]string, len(opts.AdditionalSecretOutputs))
+	for idx := range opts.AdditionalSecretOutputs {
+		secs[idx] = string(opts.AdditionalSecretOutputs[idx])
+	}
+
+	result := &pulumirpc.AnalyzerResourceOptions{
+		Parent:                  string(opts.Parent),
+		Protect:                 opts.Protect,
+		Dependencies:            convertURNs(opts.Dependencies),
+		Provider:                opts.Provider,
+		AdditionalSecretOutputs: secs,
+		Aliases:                 convertURNs(opts.Aliases),
+	}
+	if opts.CustomTimeouts.IsNotEmpty() {
+		result.CustomTimeouts = &pulumirpc.AnalyzerResourceOptions_CustomTimeouts{}
+		if opts.CustomTimeouts.Create != 0 {
+			result.CustomTimeouts.Create = time.Duration(float64(time.Second) * opts.CustomTimeouts.Create).String()
+		}
+		if opts.CustomTimeouts.Update != 0 {
+			result.CustomTimeouts.Update = time.Duration(float64(time.Second) * opts.CustomTimeouts.Update).String()
+		}
+		if opts.CustomTimeouts.Delete != 0 {
+			result.CustomTimeouts.Delete = time.Duration(float64(time.Second) * opts.CustomTimeouts.Delete).String()
+		}
+	}
+	return result
+}
+
+func convertURNs(urns []resource.URN) []string {
+	result := make([]string, len(urns))
+	for idx := range urns {
+		result[idx] = string(urns[idx])
+	}
+	return result
 }
 
 func convertEnforcementLevel(el pulumirpc.EnforcementLevel) (apitype.EnforcementLevel, error) {
