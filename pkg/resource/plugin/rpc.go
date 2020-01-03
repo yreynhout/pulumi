@@ -36,6 +36,7 @@ type MarshalOptions struct {
 	ComputeAssetHashes bool   // true if we are computing missing asset hashes on the fly.
 	KeepSecrets        bool   // true if we are keeping secrets (otherwise we replace them with their underlying value).
 	RejectAssets       bool   // true if we should return errors on Asset and Archive values.
+	KeepResources      bool   // true if we are keeping resoures (otherwise we return raw urn).
 }
 
 const (
@@ -159,6 +160,10 @@ func MarshalPropertyValue(v resource.PropertyValue, opts MarshalOptions) (*struc
 		})
 		return MarshalPropertyValue(secret, opts)
 	} else if v.IsResource() {
+		if !opts.KeepResources {
+			logging.V(5).Infof("marshalling resource value as raw urn as opts.KeepResources is false")
+			return MarshalPropertyValue(v.ResourceValue().Urn, opts)
+		}
 		res := resource.NewObjectProperty(resource.PropertyMap{
 			resource.SigKey: resource.NewStringProperty(resource.ResourceSig),
 			"urn":           v.ResourceValue().Urn,
