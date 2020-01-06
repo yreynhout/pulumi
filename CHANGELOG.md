@@ -42,6 +42,8 @@ CHANGELOG
 
 - Breaking changes for the Go SDK. Complete details are in [#3506](https://github.com/pulumi/pulumi/pull/3506).
 
+- Expose resource options to policies. [#3720](https://github.com/pulumi/pulumi/pull/3720)
+
 ## 1.8.1 (2019-12-20)
 
 - Fix a panic in `pulumi stack select`.
