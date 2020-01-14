@@ -189,6 +189,7 @@ Pulumi.StringAsset
 Pulumi.StringAsset.StringAsset(string text) -> void
 Pulumi.Testing.IMocks
 Pulumi.Testing.IMocks.CallAsync(string token, object args, string provider) -> System.Threading.Tasks.Task<object>
+Pulumi.Testing.IMocks.NewResourceAsync(string type, string name, object inputs, string provider, string id) -> System.Threading.Tasks.Task<(string id, object state)>
 Pulumi.Testing.TestResult
 Pulumi.Testing.TestResult.HasErrors.get -> bool
 Pulumi.Testing.TestResult.LoggedErrors.get -> System.Collections.Immutable.ImmutableArray<string>

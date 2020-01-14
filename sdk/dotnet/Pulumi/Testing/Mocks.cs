@@ -7,6 +7,9 @@ namespace Pulumi.Testing
     public interface IMocks
     {
         Task<object> CallAsync(string token, object args, string? provider);
+
+        Task<(string id, object state)> NewResourceAsync(string type, string name, object inputs, string? provider,
+            string? id);
     }
     
     class MockMonitor : IMonitor
