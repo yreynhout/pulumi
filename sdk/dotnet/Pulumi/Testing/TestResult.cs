@@ -6,7 +6,7 @@ namespace Pulumi.Testing
 {
     /// <summary>
     /// Represents an outcome of <see
-    /// cref="Deployment.TestAsync{TStack}(ITestContext)"/>.
+    /// cref="Deployment.TestAsync{TStack}(IMocks)"/>.
     /// </summary>
     public class TestResult
     {

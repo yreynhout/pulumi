@@ -1,10 +1,8 @@
 // Copyright 2016-2019, Pulumi Corporation
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Grpc.Core;
-using Microsoft.Win32.SafeHandles;
-using Pulumirpc;
 
 namespace Pulumi
 {
@@ -55,8 +53,7 @@ namespace Pulumi
         private readonly ILogger _logger;
         private readonly IRunner _runner;
 
-        internal Engine.EngineClient Engine { get; }
-        internal ResourceMonitor.ResourceMonitorClient Monitor { get; }
+        internal IMonitor Monitor { get; }
 
         internal Stack? _stack;
         internal Stack Stack
@@ -92,16 +89,22 @@ namespace Pulumi
             _stackName = stack;
             _projectName = project;
 
-            Serilog.Log.Debug("Creating Deployment Engine.");
-            this.Engine = new Engine.EngineClient(new Channel(engine, ChannelCredentials.Insecure));
-            Serilog.Log.Debug("Created Deployment Engine.");
-
-            Serilog.Log.Debug("Creating Deployment Monitor.");
-            this.Monitor = new ResourceMonitor.ResourceMonitorClient(new Channel(monitor, ChannelCredentials.Insecure));
-            Serilog.Log.Debug("Created Deployment Monitor.");
+            Serilog.Log.Debug("Creating Deployment Engine and Monitor.");
+            this.Monitor = new GrpcMonitor(engine, monitor);
+            Serilog.Log.Debug("Created Deployment Engine and Monitor.");
 
             _runner = new Runner(this);
-            _logger = new Logger(this, this.Engine);
+            _logger = new Logger(this, this.Monitor);
+        }
+
+        private Deployment(IMonitor monitor)
+        {
+            _isDryRun = true;
+            _stackName = "teststack";
+            _projectName = "testproject";
+            this.Monitor = monitor;
+            _runner = new Runner(this);
+            _logger = new Logger(this, this.Monitor);
         }
 
         string IDeployment.ProjectName => _projectName;

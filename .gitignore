@@ -4,6 +4,7 @@
 **/bin
 **/.vscode/
 **/.vs/
+**/.idea/
 coverage.cov
 *.coverprofile
 

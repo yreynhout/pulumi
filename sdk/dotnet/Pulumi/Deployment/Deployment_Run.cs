@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
 using Pulumi.Testing;
 
@@ -94,14 +95,16 @@ namespace Pulumi
         /// type parameter. This method creates no real resources.
         /// </summary>
         /// <typeparam name="TStack">The type of the stack to test.</typeparam>
-        /// <param name="stub">Optional stub for the deployment hooks.</param>
+        /// <param name="mocks">Mocks for the deployment hooks.</param>
         /// <returns>Test outcome, including any errors and created
         /// resources.</returns>
-        public static Task<TestResult> TestAsync<TStack>(ITestContext? stub = null) where TStack : Stack, new()
+        public async static Task<TestResult> TestAsync<TStack>(IMocks mocks) where TStack : Stack, new()
         {
-            var tester = new Tester(stub);
-            Instance = tester;
-            return tester.TestAsync<TStack>();
+            var monitor = new MockMonitor(mocks);
+            var deployment = new Deployment(monitor);
+            Instance = deployment;
+            var code = await deployment._runner.RunAsync<TStack>();
+            return new TestResult(code >  0, monitor.LoggedMessages, Enumerable.Empty<Resource>());
         }
 
         private static IRunner CreateRunner()
