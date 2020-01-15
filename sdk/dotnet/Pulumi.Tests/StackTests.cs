@@ -1,6 +1,8 @@
 ﻿// Copyright 2016-2019, Pulumi Corporation
 
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Moq;
@@ -31,26 +33,22 @@ namespace Pulumi.Tests
         public async Task ValidStackInstantiationSucceeds()
         {
             // Arrange
-            Output<IDictionary<string, object?>>? output = null;
+            ImmutableDictionary<string, object>? outputs = null;
 
             var mock = new Mock<IMocks>();
-            //TODOmock.Setup(d => d.RegisterResourceOutputs(It.IsAny<Stack>(), It.IsAny<Output<IDictionary<string, object?>>>()))
-            //    .Callback((Resource _, Output<IDictionary<string, object?>> o) => output = o);
+            mock.Setup(d => d.ResourceOutputsAsync(It.IsAny<string>(), It.IsAny<ImmutableDictionary<string, object>>()))
+                .Callback((string _, ImmutableDictionary<string, object> o) => outputs = o);
 
             // Act
             var result = await Deployment.TestAsync<ValidStack>(mock.Object);
 
             // Assert
-            var errors = string.Join(",", result.LoggedErrors);
-            Assert.False(result.HasErrors, "Running a valid stack should yield no errors but received: " + errors);
-            var stack = result.Resources.OfType<ValidStack>().FirstOrDefault();
-            Assert.NotNull(stack);
-
-            var outputData = await output!.DataTask;
-            var outputs = outputData.Value;
-            Assert.Equal(2, outputs.Count);
-            Assert.Same(stack.ExplicitName, outputs["foo"]);
-            Assert.Same(stack.ImplicitName, outputs["ImplicitName"]);
+            Assert.Equal(0, result);
+            
+            Assert.NotNull(outputs);
+            Assert.Equal(2, outputs!.Count);
+            Assert.Equal("bar", outputs["foo"]);
+            Assert.Equal("buzz", outputs["ImplicitName"]);
         }
 
         private class NullOutputStack : Stack
@@ -62,11 +60,14 @@ namespace Pulumi.Tests
         [Fact]
         public async Task StackWithNullOutputsThrows()
         {
+            string? loggedError = null;
             var mock = new Mock<IMocks>();
-            var result = await Deployment.TestAsync<NullOutputStack>(mock.Object);
-            Assert.True(result.HasErrors);
-            Assert.Single(result.LoggedErrors);
-            Assert.Contains("Foo", result.LoggedErrors.First());
+            mock.Setup(m => m.HandleErrorAsync(It.IsAny<string>())).Callback((string v) => loggedError = v);
+            
+            await Deployment.TestAsync<NullOutputStack>(mock.Object);
+            
+            Assert.NotNull(loggedError);
+            Assert.Contains("Foo", loggedError);
         }
 
         private class InvalidOutputTypeStack : Stack
@@ -83,11 +84,14 @@ namespace Pulumi.Tests
         [Fact]
         public async Task StackWithInvalidOutputTypeThrows()
         {
+            string? loggedError = null;
             var mock = new Mock<IMocks>();
-            var result = await Deployment.TestAsync<InvalidOutputTypeStack>(mock.Object);
-            Assert.True(result.HasErrors);
-            Assert.Single(result.LoggedErrors);
-            Assert.Contains("Foo", result.LoggedErrors.First());
+            mock.Setup(m => m.HandleErrorAsync(It.IsAny<string>())).Callback((string v) => loggedError = v);
+            
+            await Deployment.TestAsync<InvalidOutputTypeStack>(mock.Object);
+            
+            Assert.NotNull(loggedError);
+            Assert.Contains("Foo was not an Output", loggedError);
         }
     }
 }

@@ -96,15 +96,14 @@ namespace Pulumi
         /// </summary>
         /// <typeparam name="TStack">The type of the stack to test.</typeparam>
         /// <param name="mocks">Mocks for the deployment hooks.</param>
-        /// <returns>Test outcome, including any errors and created
-        /// resources.</returns>
-        public async static Task<TestResult> TestAsync<TStack>(IMocks mocks) where TStack : Stack, new()
+        /// <returns>Test status code: 0 if succeeded, > 0 if failed.</returns>
+        public static async Task<int> TestAsync<TStack>(IMocks mocks) where TStack : Stack, new()
         {
             var monitor = new MockMonitor(mocks);
             var deployment = new Deployment(monitor);
             Instance = deployment;
             var code = await deployment._runner.RunAsync<TStack>();
-            return new TestResult(code >  0, monitor.LoggedMessages, Enumerable.Empty<Resource>());
+            return code;
         }
 
         private static IRunner CreateRunner()
