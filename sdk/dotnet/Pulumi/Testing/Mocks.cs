@@ -18,6 +18,7 @@ namespace Pulumi.Testing
         /// <summary>
         /// Invoked when a new resource is created by the program.
         /// </summary>
+        /// <param name="resource">Resource instance.</param>
         /// <param name="type">Resource type name.</param>
         /// <param name="name">Resource name.</param>
         /// <param name="inputs">Dictionary of resource input properties.</param>
@@ -25,7 +26,7 @@ namespace Pulumi.Testing
         /// <param name="id">Resource identifier.</param>
         /// <returns>A tuple of a resource identifier and resource state. State can be either a POCO
         /// or a dictionary bag.</returns>
-        Task<(string id, object state)> NewResourceAsync(string type, string name,
+        Task<(string id, object state)> NewResourceAsync(Resource resource, string type, string name,
             ImmutableDictionary<string, object> inputs, string? provider, string? id);
 
         /// <summary>
@@ -52,7 +53,34 @@ namespace Pulumi.Testing
         Task ResourceOutputsAsync(string urn, ImmutableDictionary<string, object> outputs);
     }
     
-    class MockMonitor : IMonitor
+    internal class DefaultMocks : IMocks
+    {
+        public readonly List<string> Errors = new List<string>();
+        public readonly List<Resource> Resources = new List<Resource>();
+        
+        public Task<(string id, object state)> NewResourceAsync(Resource resource, string type, string name,
+            ImmutableDictionary<string, object> inputs, string? provider, string? id)
+        {
+            Resources.Add(resource);
+            var outputs = inputs.Add("name", "test");
+            return Task.FromResult((type + "-test", (object)outputs));
+
+        }
+
+        public Task<object> CallAsync(string token, ImmutableDictionary<string, object> args, string? provider)
+            => Task.FromResult((object)args); // We may want something smarter here, I haven't got to invokes yet.
+
+        public Task HandleErrorAsync(string message)
+        {
+            Errors.Add(message);
+            return Task.CompletedTask;
+        }
+
+        public Task ResourceOutputsAsync(string urn, ImmutableDictionary<string, object> outputs)
+            => Task.CompletedTask;
+    }
+
+    internal class MockMonitor : IMonitor
     {
         private readonly IMocks _mocks;
         private readonly Serializer _serializer = new Serializer();
@@ -69,9 +97,9 @@ namespace Pulumi.Testing
             return new InvokeResponse { Return = await SerializeAsync(result) };
         }
 
-        public async Task<ReadResourceResponse> ReadResourceAsync(ReadResourceRequest request)
+        public async Task<ReadResourceResponse> ReadResourceAsync(Resource resource, ReadResourceRequest request)
         {
-            var (id, state) = await _mocks.NewResourceAsync(request.Type, request.Name,
+            var (id, state) = await _mocks.NewResourceAsync(resource, request.Type, request.Name,
                 ToDictionary(request.Properties), request.Provider, request.Id);
             return new ReadResourceResponse
             {
@@ -80,10 +108,10 @@ namespace Pulumi.Testing
             };
         }
 
-        public async Task<RegisterResourceResponse> RegisterResourceAsync(RegisterResourceRequest request)
+        public async Task<RegisterResourceResponse> RegisterResourceAsync(Resource resource, RegisterResourceRequest request)
         {
-            var (id, state) = await _mocks.NewResourceAsync(request.Type, request.Name, ToDictionary(request.Object),
-                request.Provider, request.ImportId);
+            var (id, state) = await _mocks.NewResourceAsync(resource, request.Type, request.Name,
+                ToDictionary(request.Object), request.Provider, request.ImportId);
             return new RegisterResourceResponse
             {
                 Id = id ?? request.ImportId,
@@ -149,4 +177,34 @@ namespace Pulumi.Testing
         }
     }
 
+    /// <summary>
+    /// Represents an outcome of a test run.
+    /// </summary>
+    public class TestResult
+    {
+        /// <summary>
+        /// Whether the test run failed with an error.
+        /// </summary>
+        public bool HasErrors { get; }
+
+        /// <summary>
+        /// Error messages that were logged during the run.
+        /// </summary>
+        public ImmutableArray<string> LoggedErrors { get; }
+
+        /// <summary>
+        /// All Pulumi resources that got registered during the run.
+        /// </summary>
+        public ImmutableArray<Resource> Resources { get; }
+
+        // TODO: this is an awkward method that I had to add to extract values from outputs. Is there a better way?
+        public Task<T> GetAsync<T>(Output<T> output) => output.GetValueAsync();
+
+        internal TestResult(bool hasErrors, IEnumerable<string> loggedErrors, IEnumerable<Resource> resources)
+        {
+            this.HasErrors = hasErrors;
+            this.LoggedErrors = loggedErrors.ToImmutableArray();
+            this.Resources = resources.ToImmutableArray();
+        }
+    }
 }

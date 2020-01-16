@@ -8,9 +8,9 @@ namespace Pulumi
     {
         Task<InvokeResponse> InvokeAsync(InvokeRequest request);
 
-        Task<ReadResourceResponse> ReadResourceAsync(ReadResourceRequest request);
+        Task<ReadResourceResponse> ReadResourceAsync(Resource resource, ReadResourceRequest request);
 
-        Task<RegisterResourceResponse> RegisterResourceAsync(RegisterResourceRequest request);
+        Task<RegisterResourceResponse> RegisterResourceAsync(Resource resource, RegisterResourceRequest request);
 
         Task RegisterResourceOutputsAsync(RegisterResourceOutputsRequest request);
 
@@ -35,10 +35,10 @@ namespace Pulumi
         public async Task<InvokeResponse> InvokeAsync(InvokeRequest request)
             => await this._client.InvokeAsync(request);
 
-        public async Task<ReadResourceResponse> ReadResourceAsync(ReadResourceRequest request)
+        public async Task<ReadResourceResponse> ReadResourceAsync(Resource resource, ReadResourceRequest request)
             => await this._client.ReadResourceAsync(request);
 
-        public async Task<RegisterResourceResponse> RegisterResourceAsync(RegisterResourceRequest request)
+        public async Task<RegisterResourceResponse> RegisterResourceAsync(Resource resource, RegisterResourceRequest request)
             => await this._client.RegisterResourceAsync(request);
 
         public async Task RegisterResourceOutputsAsync(RegisterResourceOutputsRequest request)

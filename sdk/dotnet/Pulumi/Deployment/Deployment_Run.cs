@@ -106,6 +106,23 @@ namespace Pulumi
             return code;
         }
 
+        /// <summary>
+        /// Entry point to test a Pulumi application. Deployment will
+        /// instantiate a new stack instance based on the type passed as TStack
+        /// type parameter. This method creates no real resources.
+        /// </summary>
+        /// <typeparam name="TStack">The type of the stack to test.</typeparam>
+        /// <returns>Test result containing created resources and errors, if any.</returns>
+        public static async Task<TestResult> TestAsync<TStack>() where TStack : Stack, new()
+        {
+            var mocks = new DefaultMocks();
+            var monitor = new MockMonitor(mocks);
+            var deployment = new Deployment(monitor);
+            Instance = deployment;
+            var code = await deployment._runner.RunAsync<TStack>();
+            return new TestResult(code > 0, mocks.Errors, mocks.Resources);
+        }
+
         private static IRunner CreateRunner()
         {
             // Serilog.Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Console().CreateLogger();
