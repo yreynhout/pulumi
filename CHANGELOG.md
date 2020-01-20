@@ -1,13 +1,30 @@
 CHANGELOG
 =========
 
+## HEAD (Unreleased)
+- Publish python types for PEP 561 [#3704](https://github.com/pulumi/pulumi/pull/3704)
+
+- Lock dep ts-node to v8.5.4 [#3733](https://github.com/pulumi/pulumi/pull/3733)
+
+- Improvements to `pulumi policy` functionality. Add ability to remove & disable Policy Packs.
+
+- Breaking change for Policy which is in Public Preview: Change `pulumi policy apply` to `pulumi policy enable`, and allow users to specify the Policy Group.
+
+- Add Permalink to output when publishing a Policy Pack.
+
+- Add `pulumi policy ls` and `pulumi policy group ls` to list Policy related resources.
+
+- Add `BuildNumber` to CI vars and backend metadata property bag for CI systems that have separate ID and a user-friendly number. [#3766](https://github.com/pulumi/pulumi/pull/3766)
+
+- Breaking changes for the Go SDK. Complete details are in [#3506](https://github.com/pulumi/pulumi/pull/3506).
+
 ## 1.8.1 (2019-12-20)
 
 - Fix a panic in `pulumi stack select`. [#3687](https://github.com/pulumi/pulumi/pull/3687)
 
 ## 1.8.0 (2019-12-19)
 
-- Update version of TypeScript used by Pulumi to `3.7.3`.
+- Update version of TypeScript used by Pulumi to `3.7.3`. [#3627](https://github.com/pulumi/pulumi/pull/3627)
 
 - Add support for GOOGLE_CREDENTIALS when using Google Cloud Storage backend. [#2906](https://github.com/pulumi/pulumi/pull/2906)
 
@@ -18,6 +35,8 @@ CHANGELOG
 
 - Support for using `Config`, `getProject()`, `getStack()`, and `isDryRun()` from Policy Packs.
   [#3612](https://github.com/pulumi/pulumi/pull/3612)
+- Top-level Stack component in the .NET SDK.
+  [#3618](https://github.com/pulumi/pulumi/pull/3618)
 
 - Add the .NET Core 3.0 runtime to the `pulumi/pulumi` container. [#3616](https://github.com/pulumi/pulumi/pull/3616)
 
@@ -32,6 +51,10 @@ CHANGELOG
 
 - Fix bug in determining PRNumber and BuildURL for an Azure Pipelines CI environment. [#3677](https://github.com/pulumi/pulumi/pull/3677)
 
+- Improvements to `pulumi policy` functionality. Add ability to remove & disable Policy Packs.
+
+- Breaking change for Policy which is in Public Preview: Change `pulumi policy apply` to `pulumi policy enable`, and allow users to specify the Policy Group.
+
 ## 1.7.1 (2019-12-13)
 
 - Fix [SxS issue](https://github.com/pulumi/pulumi/issues/3652) introduced in 1.7.0 when assigning
@@ -39,7 +62,9 @@ CHANGELOG
 
 ## 1.7.0 (2019-12-11)
 
-- A Pulumi JavaScript/TypeScript program can now consist of a single exported top level function. i.e.:
+- A Pulumi JavaScript/TypeScript program can now consist of a single exported top level function. This 
+  allows for an easy approach to create a Pulumi program that needs to perform `async`/`await`
+  operations at the top-level. [#3321](https://github.com/pulumi/pulumi/pull/3321)
 
   ```ts
   // JavaScript
@@ -51,16 +76,13 @@ CHANGELOG
   }
   ```
 
-  This allows for an easy approach to create a Pulumi program that needs to perform `async`/`await`
-  operations at the top-level. [#3321](https://github.com/pulumi/pulumi/pull/3321)
-
 ## 1.6.1 (2019-11-26)
 
 - Support passing a parent and providers for `ReadResource`, `RegisterResource`, and `Invoke` in the go SDK. [#3563](https://github.com/pulumi/pulumi/pull/3563)
 
-- Fix go SDK ReadResource [#3581](https://github.com/pulumi/pulumi/pull/3581)
+- Fix go SDK ReadResource. [#3581](https://github.com/pulumi/pulumi/pull/3581)
 
-- Fix go SDK DeleteBeforeReplace [#3572](https://github.com/pulumi/pulumi/pull/3572)
+- Fix go SDK DeleteBeforeReplace. [#3572](https://github.com/pulumi/pulumi/pull/3572)
 
 - Support for setting the `PULUMI_PREFER_YARN` environment variable to opt-in to using `yarn` instead of `npm` for
   installing Node.js dependencies. [#3556](https://github.com/pulumi/pulumi/pull/3556)
@@ -72,7 +94,7 @@ CHANGELOG
 
 - Support for config.GetObject and related variants for Golang. [#3526](https://github.com/pulumi/pulumi/pull/3526)
 
-- Add support for IgnoreChanges in the go SDK [#3514](https://github.com/pulumi/pulumi/pull/3514)
+- Add support for IgnoreChanges in the go SDK. [#3514](https://github.com/pulumi/pulumi/pull/3514)
 
 - Support for a `go run` style workflow. Building or installing a pulumi program written in go is
   now optional. [#3503](https://github.com/pulumi/pulumi/pull/3503)

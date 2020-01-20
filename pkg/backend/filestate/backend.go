@@ -23,6 +23,7 @@ import (
 	"os/user"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -225,6 +226,14 @@ func (b *localBackend) GetPolicyPack(ctx context.Context, policyPack string,
 	return nil, fmt.Errorf("File state backend does not support resource policy")
 }
 
+func (b *localBackend) ListPolicyGroups(ctx context.Context, orgName string) (apitype.ListPolicyGroupsResponse, error) {
+	return apitype.ListPolicyGroupsResponse{}, fmt.Errorf("File state backend does not support resource policy")
+}
+
+func (b *localBackend) ListPolicyPacks(ctx context.Context, orgName string) (apitype.ListPolicyPacksResponse, error) {
+	return apitype.ListPolicyPacksResponse{}, fmt.Errorf("File state backend does not support resource policy")
+}
+
 // SupportsOrganizations tells whether a user can belong to multiple organizations in this backend.
 func (b *localBackend) SupportsOrganizations() bool {
 	return false
@@ -232,6 +241,21 @@ func (b *localBackend) SupportsOrganizations() bool {
 
 func (b *localBackend) ParseStackReference(stackRefName string) (backend.StackReference, error) {
 	return localBackendReference{name: tokens.QName(stackRefName)}, nil
+}
+
+// ValidateStackName verifies the stack name is valid for the local backend. We use the same rules as the
+// httpstate backend.
+func (b *localBackend) ValidateStackName(stackName string) error {
+	if strings.Contains(stackName, "/") {
+		return errors.New("stack names may not contain slashes")
+	}
+
+	validNameRegex := regexp.MustCompile("^[A-Za-z0-9_.-]{1,100}$")
+	if !validNameRegex.MatchString(stackName) {
+		return errors.New("stack names may only contain alphanumeric, hyphens, underscores, or periods")
+	}
+
+	return nil
 }
 
 func (b *localBackend) DoesProjectExist(ctx context.Context, projectName string) (bool, error) {

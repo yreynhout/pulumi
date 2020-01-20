@@ -158,16 +158,26 @@ func (pack *cloudPolicyPack) Publish(
 
 	fmt.Println("Uploading policy pack to Pulumi service")
 
-	err = pack.cl.PublishPolicyPack(ctx, pack.ref.orgName, analyzerInfo, bytes.NewReader(packTarball))
+	version, err := pack.cl.PublishPolicyPack(ctx, pack.ref.orgName, analyzerInfo, bytes.NewReader(packTarball))
 	if err != nil {
 		return result.FromError(err)
 	}
 
+	fmt.Printf("\nPermalink: %s/policypacks/%s/%d\n", pack.Backend().URL(), pack.ref.Name(), version)
+
 	return nil
 }
 
-func (pack *cloudPolicyPack) Apply(ctx context.Context, op backend.ApplyOperation) error {
-	return pack.cl.ApplyPolicyPack(ctx, pack.ref.orgName, string(pack.ref.name), op.Version)
+func (pack *cloudPolicyPack) Apply(ctx context.Context, policyGroup string, op backend.PolicyPackOperation) error {
+	return pack.cl.ApplyPolicyPack(ctx, pack.ref.orgName, policyGroup, string(pack.ref.name), op.Version)
+}
+
+func (pack *cloudPolicyPack) Disable(ctx context.Context, policyGroup string, op backend.PolicyPackOperation) error {
+	return pack.cl.DisablePolicyPack(ctx, pack.ref.orgName, policyGroup, string(pack.ref.name), op.Version)
+}
+
+func (pack *cloudPolicyPack) Remove(ctx context.Context, op backend.PolicyPackOperation) error {
+	return pack.cl.RemovePolicyPack(ctx, pack.ref.orgName, string(pack.ref.name), op.Version)
 }
 
 const npmPackageDir = "package"

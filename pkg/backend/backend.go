@@ -67,7 +67,7 @@ func (e OverStackLimitError) Error() string {
 // StackReference is an opaque type that refers to a stack managed by a backend.  The CLI uses the ParseStackReference
 // method to turn a string like "my-great-stack" or "pulumi/my-great-stack" into a stack reference that can be used to
 // interact with the stack via the backend. Stack references are specific to a given backend and different back ends
-// may interpret the string passed to ParseStackReference differently
+// may interpret the string passed to ParseStackReference differently.
 type StackReference interface {
 	// fmt.Stringer's String() method returns a string of the stack identity, suitable for display in the CLI
 	fmt.Stringer
@@ -120,11 +120,20 @@ type Backend interface {
 	// GetPolicyPack returns a PolicyPack object tied to this backend, or nil if it cannot be found.
 	GetPolicyPack(ctx context.Context, policyPack string, d diag.Sink) (PolicyPack, error)
 
+	// ListPolicyGroups returns all Policy Groups for an organization in this backend or an error if it cannot be found.
+	ListPolicyGroups(ctx context.Context, orgName string) (apitype.ListPolicyGroupsResponse, error)
+
+	// ListPolicyPacks returns all Policy Packs for an organization in this backend, or an error if it cannot be found.
+	ListPolicyPacks(ctx context.Context, orgName string) (apitype.ListPolicyPacksResponse, error)
+
 	// SupportsOrganizations tells whether a user can belong to multiple organizations in this backend.
 	SupportsOrganizations() bool
 	// ParseStackReference takes a string representation and parses it to a reference which may be used for other
 	// methods in this backend.
 	ParseStackReference(s string) (StackReference, error)
+	// ValidateStackName verifies that the string is a legal identifier for a (potentially qualified) stack.
+	// Will check for any backend-specific naming restrictions.
+	ValidateStackName(s string) error
 
 	// DoesProjectExist returns true if a project with the given name exists in this backend, or false otherwise.
 	DoesProjectExist(ctx context.Context, projectName string) (bool, error)
