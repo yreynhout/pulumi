@@ -15,6 +15,7 @@
 package deploy
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -30,6 +31,20 @@ import (
 	"github.com/pulumi/pulumi/pkg/util/logging"
 	"github.com/pulumi/pulumi/pkg/util/result"
 )
+
+func debugResourceStates(m map[resource.URN]*resource.State) string {
+	result := "map[resource.URN]*resource.State{"
+	first := true
+	for k, v := range m {
+		if !first {
+			result += " "
+		}
+		first = false
+
+		result += fmt.Sprintf("%q:%#v", k, v)
+	}
+	return result + "}"
+}
 
 // stepGenerator is responsible for turning resource events into steps that
 // can be fed to the plan executor. It does this by consulting the plan
@@ -312,6 +327,9 @@ func (sg *stepGenerator) generateSteps(event RegisterResourceEvent) ([]Step, res
 		}
 		new.Inputs = inputs
 	}
+
+	fmt.Printf("JVP (r):<%v>\n          goal: %#v\n           new: %#v\n     providers: %#v\nresourceStates: %#v\n</%v>\n",
+		new.URN, goal, new, debugResourceStates(sg.providers), debugResourceStates(sg.resourceStates), new.URN)
 
 	// Send the resource off to any Analyzers before being operated on.
 	analyzers := sg.plan.ctx.Host.ListAnalyzers()
