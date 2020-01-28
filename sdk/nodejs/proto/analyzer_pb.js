@@ -615,7 +615,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.pulumirpc.AnalyzerResourceOptions.repeatedFields_ = [3,5,6];
+proto.pulumirpc.AnalyzerResourceOptions.repeatedFields_ = [3,4,6,7];
 
 
 
@@ -648,10 +648,11 @@ proto.pulumirpc.AnalyzerResourceOptions.toObject = function(includeInstance, msg
   var f, obj = {
     parent: jspb.Message.getFieldWithDefault(msg, 1, ""),
     protect: jspb.Message.getFieldWithDefault(msg, 2, false),
-    dependenciesList: jspb.Message.getRepeatedField(msg, 3),
-    provider: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    additionalsecretoutputsList: jspb.Message.getRepeatedField(msg, 5),
-    aliasesList: jspb.Message.getRepeatedField(msg, 6),
+    ignorechangesList: jspb.Message.getRepeatedField(msg, 3),
+    dependenciesList: jspb.Message.getRepeatedField(msg, 4),
+    provider: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    additionalsecretoutputsList: jspb.Message.getRepeatedField(msg, 6),
+    aliasesList: jspb.Message.getRepeatedField(msg, 7),
     customtimeouts: (f = msg.getCustomtimeouts()) && proto.pulumirpc.AnalyzerResourceOptions.CustomTimeouts.toObject(includeInstance, f)
   };
 
@@ -699,21 +700,25 @@ proto.pulumirpc.AnalyzerResourceOptions.deserializeBinaryFromReader = function(m
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.addDependencies(value);
+      msg.addIgnorechanges(value);
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
-      msg.setProvider(value);
+      msg.addDependencies(value);
       break;
     case 5:
       var value = /** @type {string} */ (reader.readString());
-      msg.addAdditionalsecretoutputs(value);
+      msg.setProvider(value);
       break;
     case 6:
       var value = /** @type {string} */ (reader.readString());
-      msg.addAliases(value);
+      msg.addAdditionalsecretoutputs(value);
       break;
     case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addAliases(value);
+      break;
+    case 8:
       var value = new proto.pulumirpc.AnalyzerResourceOptions.CustomTimeouts;
       reader.readMessage(value,proto.pulumirpc.AnalyzerResourceOptions.CustomTimeouts.deserializeBinaryFromReader);
       msg.setCustomtimeouts(value);
@@ -761,38 +766,45 @@ proto.pulumirpc.AnalyzerResourceOptions.serializeBinaryToWriter = function(messa
       f
     );
   }
-  f = message.getDependenciesList();
+  f = message.getIgnorechangesList();
   if (f.length > 0) {
     writer.writeRepeatedString(
       3,
       f
     );
   }
+  f = message.getDependenciesList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      4,
+      f
+    );
+  }
   f = message.getProvider();
   if (f.length > 0) {
     writer.writeString(
-      4,
+      5,
       f
     );
   }
   f = message.getAdditionalsecretoutputsList();
   if (f.length > 0) {
     writer.writeRepeatedString(
-      5,
+      6,
       f
     );
   }
   f = message.getAliasesList();
   if (f.length > 0) {
     writer.writeRepeatedString(
-      6,
+      7,
       f
     );
   }
   f = message.getCustomtimeouts();
   if (f != null) {
     writer.writeMessage(
-      7,
+      8,
       f,
       proto.pulumirpc.AnalyzerResourceOptions.CustomTimeouts.serializeBinaryToWriter
     );
@@ -1029,16 +1041,16 @@ proto.pulumirpc.AnalyzerResourceOptions.prototype.setProtect = function(value) {
 
 
 /**
- * repeated string dependencies = 3;
+ * repeated string ignoreChanges = 3;
  * @return {!Array.<string>}
  */
-proto.pulumirpc.AnalyzerResourceOptions.prototype.getDependenciesList = function() {
+proto.pulumirpc.AnalyzerResourceOptions.prototype.getIgnorechangesList = function() {
   return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 3));
 };
 
 
 /** @param {!Array.<string>} value */
-proto.pulumirpc.AnalyzerResourceOptions.prototype.setDependenciesList = function(value) {
+proto.pulumirpc.AnalyzerResourceOptions.prototype.setIgnorechangesList = function(value) {
   jspb.Message.setField(this, 3, value || []);
 };
 
@@ -1047,8 +1059,37 @@ proto.pulumirpc.AnalyzerResourceOptions.prototype.setDependenciesList = function
  * @param {!string} value
  * @param {number=} opt_index
  */
-proto.pulumirpc.AnalyzerResourceOptions.prototype.addDependencies = function(value, opt_index) {
+proto.pulumirpc.AnalyzerResourceOptions.prototype.addIgnorechanges = function(value, opt_index) {
   jspb.Message.addToRepeatedField(this, 3, value, opt_index);
+};
+
+
+proto.pulumirpc.AnalyzerResourceOptions.prototype.clearIgnorechangesList = function() {
+  this.setIgnorechangesList([]);
+};
+
+
+/**
+ * repeated string dependencies = 4;
+ * @return {!Array.<string>}
+ */
+proto.pulumirpc.AnalyzerResourceOptions.prototype.getDependenciesList = function() {
+  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 4));
+};
+
+
+/** @param {!Array.<string>} value */
+proto.pulumirpc.AnalyzerResourceOptions.prototype.setDependenciesList = function(value) {
+  jspb.Message.setField(this, 4, value || []);
+};
+
+
+/**
+ * @param {!string} value
+ * @param {number=} opt_index
+ */
+proto.pulumirpc.AnalyzerResourceOptions.prototype.addDependencies = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 4, value, opt_index);
 };
 
 
@@ -1058,32 +1099,32 @@ proto.pulumirpc.AnalyzerResourceOptions.prototype.clearDependenciesList = functi
 
 
 /**
- * optional string provider = 4;
+ * optional string provider = 5;
  * @return {string}
  */
 proto.pulumirpc.AnalyzerResourceOptions.prototype.getProvider = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /** @param {string} value */
 proto.pulumirpc.AnalyzerResourceOptions.prototype.setProvider = function(value) {
-  jspb.Message.setProto3StringField(this, 4, value);
+  jspb.Message.setProto3StringField(this, 5, value);
 };
 
 
 /**
- * repeated string additionalSecretOutputs = 5;
+ * repeated string additionalSecretOutputs = 6;
  * @return {!Array.<string>}
  */
 proto.pulumirpc.AnalyzerResourceOptions.prototype.getAdditionalsecretoutputsList = function() {
-  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 5));
+  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 6));
 };
 
 
 /** @param {!Array.<string>} value */
 proto.pulumirpc.AnalyzerResourceOptions.prototype.setAdditionalsecretoutputsList = function(value) {
-  jspb.Message.setField(this, 5, value || []);
+  jspb.Message.setField(this, 6, value || []);
 };
 
 
@@ -1092,7 +1133,7 @@ proto.pulumirpc.AnalyzerResourceOptions.prototype.setAdditionalsecretoutputsList
  * @param {number=} opt_index
  */
 proto.pulumirpc.AnalyzerResourceOptions.prototype.addAdditionalsecretoutputs = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 5, value, opt_index);
+  jspb.Message.addToRepeatedField(this, 6, value, opt_index);
 };
 
 
@@ -1102,17 +1143,17 @@ proto.pulumirpc.AnalyzerResourceOptions.prototype.clearAdditionalsecretoutputsLi
 
 
 /**
- * repeated string aliases = 6;
+ * repeated string aliases = 7;
  * @return {!Array.<string>}
  */
 proto.pulumirpc.AnalyzerResourceOptions.prototype.getAliasesList = function() {
-  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 6));
+  return /** @type {!Array.<string>} */ (jspb.Message.getRepeatedField(this, 7));
 };
 
 
 /** @param {!Array.<string>} value */
 proto.pulumirpc.AnalyzerResourceOptions.prototype.setAliasesList = function(value) {
-  jspb.Message.setField(this, 6, value || []);
+  jspb.Message.setField(this, 7, value || []);
 };
 
 
@@ -1121,7 +1162,7 @@ proto.pulumirpc.AnalyzerResourceOptions.prototype.setAliasesList = function(valu
  * @param {number=} opt_index
  */
 proto.pulumirpc.AnalyzerResourceOptions.prototype.addAliases = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 6, value, opt_index);
+  jspb.Message.addToRepeatedField(this, 7, value, opt_index);
 };
 
 
@@ -1131,18 +1172,18 @@ proto.pulumirpc.AnalyzerResourceOptions.prototype.clearAliasesList = function() 
 
 
 /**
- * optional CustomTimeouts customTimeouts = 7;
+ * optional CustomTimeouts customTimeouts = 8;
  * @return {?proto.pulumirpc.AnalyzerResourceOptions.CustomTimeouts}
  */
 proto.pulumirpc.AnalyzerResourceOptions.prototype.getCustomtimeouts = function() {
   return /** @type{?proto.pulumirpc.AnalyzerResourceOptions.CustomTimeouts} */ (
-    jspb.Message.getWrapperField(this, proto.pulumirpc.AnalyzerResourceOptions.CustomTimeouts, 7));
+    jspb.Message.getWrapperField(this, proto.pulumirpc.AnalyzerResourceOptions.CustomTimeouts, 8));
 };
 
 
 /** @param {?proto.pulumirpc.AnalyzerResourceOptions.CustomTimeouts|undefined} value */
 proto.pulumirpc.AnalyzerResourceOptions.prototype.setCustomtimeouts = function(value) {
-  jspb.Message.setWrapperField(this, 7, value);
+  jspb.Message.setWrapperField(this, 8, value);
 };
 
 
@@ -1156,7 +1197,7 @@ proto.pulumirpc.AnalyzerResourceOptions.prototype.clearCustomtimeouts = function
  * @return {!boolean}
  */
 proto.pulumirpc.AnalyzerResourceOptions.prototype.hasCustomtimeouts = function() {
-  return jspb.Message.getField(this, 7) != null;
+  return jspb.Message.getField(this, 8) != null;
 };
 
 

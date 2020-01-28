@@ -56,6 +56,7 @@ type AnalyzerResource struct {
 type AnalyzerResourceOptions struct {
 	Parent                  resource.URN            // an optional parent URN for this resource.
 	Protect                 bool                    // true to protect this resource from deletion.
+	IgnoreChanges           []string                // a list of property names to ignore during changes.
 	Dependencies            []resource.URN          // dependencies of this resource object.
 	Provider                string                  // the provider to use for this resource.
 	AdditionalSecretOutputs []resource.PropertyKey  // outputs that should always be treated as secrets.

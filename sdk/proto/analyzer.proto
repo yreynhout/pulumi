@@ -68,11 +68,12 @@ message AnalyzerResourceOptions {
 
     string parent = 1;                           // an optional parent URN that this child resource belongs to.
     bool protect = 2;                            // true if the resource should be marked protected.
-    repeated string dependencies = 3;            // a list of URNs that this resource depends on.
-    string provider = 4;                         // the provider to manage this resource's CRUD operations.
-    repeated string additionalSecretOutputs = 5; // a list of output properties that should also be treated as secret, in addition to ones we detect.
-    repeated string aliases = 6;                 // a list of additional URNs that shoud be considered the same.
-    CustomTimeouts customTimeouts = 7;           // a config block that will be used to configure timeouts for CRUD operations.
+    repeated string ignoreChanges = 3;           // a list of property names to ignore during changes.
+    repeated string dependencies = 4;            // a list of URNs that this resource depends on.
+    string provider = 5;                         // the provider to manage this resource's CRUD operations.
+    repeated string additionalSecretOutputs = 6; // a list of output properties that should also be treated as secret, in addition to ones we detect.
+    repeated string aliases = 7;                 // a list of additional URNs that shoud be considered the same.
+    CustomTimeouts customTimeouts = 8;           // a config block that will be used to configure timeouts for CRUD operations.
 }
 
 message AnalyzeStackRequest {

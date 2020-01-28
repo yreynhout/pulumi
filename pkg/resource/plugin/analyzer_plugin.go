@@ -288,6 +288,7 @@ func convertResourceOptions(opts AnalyzerResourceOptions) *pulumirpc.AnalyzerRes
 	result := &pulumirpc.AnalyzerResourceOptions{
 		Parent:                  string(opts.Parent),
 		Protect:                 opts.Protect,
+		IgnoreChanges:           opts.IgnoreChanges,
 		Dependencies:            convertURNs(opts.Dependencies),
 		Provider:                opts.Provider,
 		AdditionalSecretOutputs: secs,
