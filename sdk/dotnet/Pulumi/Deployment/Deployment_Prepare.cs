@@ -1,6 +1,5 @@
 ﻿// Copyright 2016-2019, Pulumi Corporation
 
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -13,7 +12,7 @@ namespace Pulumi
     {
         private async Task<PrepareResult> PrepareResourceAsync(
             string label, Resource res, bool custom,
-            ResourceArgs args, ResourceOptions options)
+            IResourceArgs args, ResourceOptions options)
         {
             /* IMPORTANT!  We should never await prior to this line, otherwise the Resource will be partly uninitialized. */
 
