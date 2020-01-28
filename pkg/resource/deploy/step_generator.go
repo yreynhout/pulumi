@@ -328,7 +328,7 @@ func (sg *stepGenerator) generateSteps(event RegisterResourceEvent) ([]Step, res
 		new.Inputs = inputs
 	}
 
-	fmt.Printf("JVP (r):<%v>\n          goal: %#v\n           new: %#v\n     providers: %#v\nresourceStates: %#v\n</%v>\n",
+	fmt.Printf("JVP (r):<%v>\n          goal: %#v\n           new: %#v\n     providers: %#v\nresourceStates: %#v\n</%v>\n\n\n\n",
 		new.URN, goal, new, debugResourceStates(sg.providers), debugResourceStates(sg.resourceStates), new.URN)
 
 	// Send the resource off to any Analyzers before being operated on.
