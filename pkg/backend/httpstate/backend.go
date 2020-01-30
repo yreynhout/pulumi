@@ -125,6 +125,8 @@ type cloudBackend struct {
 	currentProject *workspace.Project
 }
 
+var _ backend.SpecificDeploymentExporter = &cloudBackend{}
+
 // New creates a new Pulumi backend for the given cloud API URL and token.
 func New(d diag.Sink, cloudURL string) (Backend, error) {
 	cloudURL = ValueOrDefaultURL(cloudURL)
@@ -1152,18 +1154,43 @@ func (b *cloudBackend) GetLogs(ctx context.Context, stack backend.Stack, cfg bac
 
 func (b *cloudBackend) ExportDeployment(ctx context.Context,
 	stack backend.Stack) (*apitype.UntypedDeployment, error) {
-	return b.exportDeployment(ctx, stack.Ref())
+	return b.exportDeployment(ctx, stack.Ref(), nil /* latest */)
 }
 
-func (b *cloudBackend) exportDeployment(ctx context.Context,
-	stackRef backend.StackReference) (*apitype.UntypedDeployment, error) {
+func (b *cloudBackend) ExportSpecificDeployment(
+	ctx context.Context, stack backend.Stack, version string) (*apitype.UntypedDeployment, error) {
+	// The Pulumi Console defines versions as a positive integer. Parse the provided version string and
+	// ensure it is valid.
+	//
+	// The first stack update version is 1, and monotonically increasing from there.
+	versionNumber, err := strconv.Atoi(version)
+	if err != nil || versionNumber <= 0 {
+		return nil, errors.Errorf("%q is not a valid stack version. It should be a positive integer.", version)
+	}
+
+	return b.exportDeployment(ctx, stack.Ref(), &versionNumber)
+}
+
+// exportDeployment exports the checkpoint file for a stack, optionally getting a previous version.
+func (b *cloudBackend) exportDeployment(
+	ctx context.Context, stackRef backend.StackReference, version *int) (*apitype.UntypedDeployment, error) {
 	stack, err := b.getCloudStackIdentifier(stackRef)
 	if err != nil {
 		return nil, err
 	}
 
-	deployment, err := b.client.ExportStackDeployment(ctx, stack)
+	deployment, err := b.client.ExportStackDeployment(ctx, stack, version)
 	if err != nil {
+		// If we get a 400 response, we can improve the error message displayed to users than
+		// the default of "[400] Bad Request: Invalid stack version".
+		if errResp, ok := err.(*apitype.ErrorResponse); ok {
+			if errResp.Code == http.StatusBadRequest && strings.Contains(errResp.Message, "Invalid stack version") {
+				// will be the case for invalid or mal-formed... in this case just change the messaging
+				to carry through the message.
+				return nil, errors.Errorf("invalid stack version", *version)
+			}
+			if status 404 == not found... then "stack version %d not found".
+		}
 		return nil, err
 	}
 
