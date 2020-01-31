@@ -72,7 +72,7 @@ func newStackSelectCmd() *cobra.Command {
 					return state.SetCurrentStack(stackRef.String())
 				}
 				//if create flag was passed and stack was not found, create it and select it
-				if create == true && stack != "" {
+				if create && stack != "" {
 					s, err := stackInit(b, stack, false, secretsProvider)
 					if err != nil {
 						return err
@@ -97,8 +97,13 @@ func newStackSelectCmd() *cobra.Command {
 	cmd.PersistentFlags().StringVarP(
 		&stack, "stack", "s", "",
 		"The name of the stack to select")
-	cmd.PersistentFlags().BoolVar(
-		&create, "create", false,
+	cmd.PersistentFlags().BoolVarP(
+		&create, "create", "c", false,
 		"If selected stack does not exist, create it")
+	cmd.PersistentFlags().StringVar(
+		&secretsProvider, "secrets-provider", "default",
+		"Use with --create flag, "+
+			"the type of the provider that should be used to encrypt and decrypt secrets"+
+			"(possible choices: default, passphrase, awskms, azurekeyvault, gcpkms, hashivault)")
 	return cmd
 }
